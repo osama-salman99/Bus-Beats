@@ -5,4 +5,6 @@
     <color name="colorAccent">#F226D0</color>
     <color name="colorActive">#267DF2</color>
     <color name="colorInactive">#75797C</color>
+    <color name="colorShade">#66000000</color>
+    <color name="colorPin">#AA1313</color>
 </resources>

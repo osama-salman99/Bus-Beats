@@ -3,4 +3,6 @@
     <string name="previous_rides">Previous rides</string>
     <string name="map">Map</string>
     <string name="settings">Settings</string>
+    <string name="go_button">Go Button</string>
+    <string name="my_location_button">My Location Button</string>
 </resources>
