@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Bus Beats</string>
     <string name="previous_rides">Previous rides</string>
     <string name="map">Map</string>
@@ -6,4 +6,22 @@
     <string name="go_button">Go Button</string>
     <string name="my_location_button">My Location Button</string>
     <string name="google_cloud_api_key">GOOGLE_API_KEY_HERE</string>
+    <string name="server_client_id" tools:ignore="TypographyDashes">
+        111787593487-nqssvthlgj8vtjss9a9iapd9r0t3291s.apps.googleusercontent.com
+    </string>
+    <string name="app_label">Bus Beats</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="register">Register</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="date_of_birth">Date Of Birth</string>
+    <string name="already_a_member">Already a member?</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Prefer not to specify</string>
+    <string name="facebook_app_id">603018826917625</string>
+    <string name="fb_login_protocol_scheme">fb603018826917625</string>
 </resources>

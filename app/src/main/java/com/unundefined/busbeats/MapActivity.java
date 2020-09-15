@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -33,6 +34,7 @@ import java.util.List;
 import static android.content.ContentValues.TAG;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+    public static final String SIGNED_IN_KEY = "com.unundefined.busbeats.SIGNED_IN";
     private static final int LOCATION_REQUEST_CODE = 1;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
     private static final List<Place.Field> FIELDS = Arrays.asList(
@@ -40,6 +42,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Place.Field.NAME,
             Place.Field.ADDRESS,
             Place.Field.LAT_LNG);
+    public static SharedPreferences sharedPreferences;
     private SearchView searchView;
     private GoogleMap mMap;
 
@@ -47,7 +50,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        sharedPreferences = getPreferences(MODE_PRIVATE);
 
+        boolean signedIn = sharedPreferences.getBoolean(SIGNED_IN_KEY, false);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Log.d(TAG, "onCreate: " + signedIn + " " + Auth.getFirebaseAuth().getCurrentUser());
+        if (!signedIn || Auth.getFirebaseAuth().getCurrentUser() == null) {
+            editor.putBoolean(SIGNED_IN_KEY, false);
+            editor.apply();
+            goToLogInScreen();
+            return;
+        }
+
+        User.setUpUserFromFirebase();
         setUpAppBar();
 
         Places.initialize(getApplicationContext(), getResources().getString(R.string.google_cloud_api_key));
@@ -182,5 +197,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void clearSearchFocus() {
         searchView.setQuery(null, false);
         searchView.clearFocus();
+    }
+
+    private void goToLogInScreen() {
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        finish();
     }
 }
