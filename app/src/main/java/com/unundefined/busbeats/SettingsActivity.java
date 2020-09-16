@@ -10,6 +10,8 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.snackbar.Snackbar;
+
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
@@ -17,6 +19,44 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         setUpAppBar();
+
+        View parentLayout = findViewById(android.R.id.content);
+        final Snackbar mySnackbar = Snackbar.make(parentLayout, "link saved to clipboard", Snackbar.LENGTH_LONG);
+
+        findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(getApplicationContext(), GeneralSettingsActivity.class));
+
+
+            }
+        });
+
+        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+
+
+            }
+        });
+
+        findViewById(R.id.button6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mySnackbar.show();
+            }
+        });
+
+
+        findViewById(R.id.button7).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), HelpActivity.class));
+            }
+        });
     }
 
     @Override

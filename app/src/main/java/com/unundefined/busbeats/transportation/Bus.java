@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -13,7 +14,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.unundefined.busbeats.OnBusReadyCallback;
+import com.unundefined.busbeats.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,11 +26,17 @@ import static android.content.ContentValues.TAG;
 public class Bus extends Vehicle {
     private MarkerOptions markerOptions;
     private OnBusReadyCallback activity;
+    private int locationIndex;
 
     public Bus(DocumentSnapshot document, OnBusReadyCallback activity) {
         super(document);
         this.activity = activity;
-        this.markerOptions = new MarkerOptions(); // Set icon
+        this.markerOptions = new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_icon));
+    }
+
+    public String getName() {
+        return name;
     }
 
     public MarkerOptions getMarkerOptions() {
@@ -69,10 +76,13 @@ public class Bus extends Vehicle {
                             route.add(new LatLng(lat, lng));
                         }
                         Bus.this.route = route;
-                        location = route.getPoints().get(0);
+                        int size = route.getPoints().size();
+                        locationIndex = (int) (Math.random() * size);
+                        location = route.getPoints().get(locationIndex);
                         markerOptions.position(location);
-                        Log.d(TAG, "onSuccess: " + markerOptions.getPosition());
+                        Log.d(TAG, "onSuccess: " + name + ": " + route.getPoints().size());
                         activity.onBusReady();
+                        startMoving();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -80,5 +90,32 @@ public class Bus extends Vehicle {
                 Log.w(TAG, "onFailure: could not fetch route", exception);
             }
         });
+    }
+
+    public boolean markerOptionsReady() {
+        return markerOptions.getPosition() != null;
+    }
+
+    private void startMoving() {
+        new Thread(new Runnable() {
+            @Override
+            public synchronized void run() {
+                while (locationIndex >= 0) {
+                    move();
+                    try {
+                        wait(2000);
+                    } catch (InterruptedException exception) {
+                        exception.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    private void move() {
+        locationIndex++;
+        locationIndex %= route.getPoints().size();
+        location = route.getPoints().get(locationIndex);
+        markerOptions.position(location);
     }
 }

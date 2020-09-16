@@ -12,12 +12,12 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_other">Prefer not to specify</string>
-    <string name="facebook_app_id">ID</string>
-    <string name="fb_login_protocol_scheme">KEY</string>
+    <string name="facebook_app_id">603018826917625</string>
+    <string name="fb_login_protocol_scheme">fb603018826917625</string>
     <string name="server_client_id" tools:ignore="TypographyDashes">
-        KEY
+        111787593487-nqssvthlgj8vtjss9a9iapd9r0t3291s.apps.googleusercontent.com
     </string>
-    <string name="google_cloud_api_key">KEY</string>
+    <string name="google_cloud_api_key">AIzaSyBaXsGY-7EKR5p8SGtOUOBUP_ObcD68Srs</string>
     <string name="sign_out">Sign out</string>
     <string name="previous_rides">Previous rides</string>
     <string name="map">Map</string>
@@ -27,6 +27,65 @@
     <string name="search_hint">Search places</string>
     <string name="my_location_button">My Location Button</string>
     <string name="go_button">Go Button</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="re_enter_password">Re-Enter Password</string>
+    <string name="agreeing_terms_text">By clicking Register you are agreeing to</string>
+    <string name="the_terms_and_conditions">The Terms and Conditions</string>
+    <string name="swipe_up">swipe_up</string>
+    <string name="login">Login</string>
+    <string name="or_login_with">Or login with</string>
+    <string name="sign_up">Do not have an account ?</string>
+    <string name="forget_your_password">Forget your password?</string>
+    <string name="password_rules">* password must be at least 8 characters and include at least 1 number</string>
+    <string name="about" tools:ignore="Typos">About this App \n\n We UnUnDEFINED team redefined some solution to cope with some \n issues that people face while using public transportation
+    . So we came with an idea to help people how to travel from one point to another using public transportation by (to be continued)
+
+        \n \n                  "Copyright @ 2019 UnUnDefined Team"
+
+    </string>
+    <string name="maps">Maps</string>
+    <string name="set_location_on_map">set location on map</string>
+    <string name="current_location">current location</string>
+    <string name="data_usage_and_storage">Data Usage and storage</string>
+    <string name="help">Help</string>
+    <string name="share_application">Share Application</string>
+    <string name="notifications">Notifications</string>
+    <string name="general_settings">General Settings</string>
+    <string name="khaled_hweij">Khaled Hweij</string>
+    <string name="return_to_previous_window">return to previous window</string>
+    <string name="language">Language</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="delete_my_account">Delete My Account</string>
+    <string name="use_mobile_data">Use Mobile Data</string>
+    <string name="profile_settings">Profile settings</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="username">Username</string>
+    <string name="email_gmail_com">email@gmail.com</string>
+    <string name="_0790000000">0790000000</string>
+    <string name="_14_03_1999">14-03-1999</string>
+    <string name="change_password">Change Password</string>
+    <string name="enter_new_password">Enter new password</string>
+    <string name="save">Save</string>
+    <string name="application_name">Bus Beats</string>
+    <string name="faq">FAQ</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
+    <string name="application_name_version_number">Bus Beats Version 1.0</string>
+    <string name="copyright_2020_darabkat_team">Copyright @ 2020 Darabkat Team</string>
+    <string name="application_logo">Application Logo</string>
+    <string name="need_help">need help ?</string>
+    <string name="about_the_application">about the application</string>
+    <string name="rate_the_application">rate the application</string>
+    <string name="done">Done</string>
+    <string name="return_your_password_using_e_mail">Return your password using E-mail</string>
+    <string name="trip_info">Trip info</string>
+    <string name="starting_location">Starting Location</string>
+    <string name="destination_location">destination location</string>
+    <string name="duration">duration</string>
+    <string name="trip_fee">trip fee</string>
+    <string name="trip_distance">trip distance</string>
     <string name="start">Start</string>
     <string name="select">Select</string>
+    <string name="your_rides">Your Rides</string>
 </resources>

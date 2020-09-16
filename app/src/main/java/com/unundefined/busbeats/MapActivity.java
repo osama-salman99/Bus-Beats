@@ -11,6 +11,8 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +48,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.unundefined.busbeats.transportation.Bus;
+import com.unundefined.busbeats.transportation.OnBusReadyCallback;
+import com.unundefined.busbeats.transportation.OnServiceReadyCallback;
+import com.unundefined.busbeats.transportation.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +59,7 @@ import java.util.List;
 import static android.content.ContentValues.TAG;
 
 public class MapActivity extends AppCompatActivity
-        implements OnMapReadyCallback, OnBusReadyCallback {
+        implements OnMapReadyCallback, OnBusReadyCallback, OnServiceReadyCallback {
     public static final String SIGNED_IN_KEY = "com.unundefined.busbeats.SIGNED_IN";
     private static final int LOCATION_REQUEST_CODE = 1;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
@@ -74,6 +79,8 @@ public class MapActivity extends AppCompatActivity
     private Trip currentTrip;
     private ArrayList<Polyline> polylines;
     private ArrayList<Bus> buses;
+    private ArrayList<Service> services;
+    private Thread refreshThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +117,6 @@ public class MapActivity extends AppCompatActivity
         polylines = new ArrayList<>();
 
         fetchVehicles();
-        setUpMarkerListeners();
     }
 
     @Override
@@ -144,28 +150,6 @@ public class MapActivity extends AppCompatActivity
         drawable = settingsButton.getCompoundDrawables()[1];
         drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         settingsButton.setCompoundDrawables(null, drawable, null, null);
-    }
-
-    private void setUpMarkerListeners() {
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                for (Bus bus : buses) {
-                    if (bus.getMarker().equals(marker)) {
-                        showBusRoute(bus);
-                        return;
-                    }
-                }
-            }
-        });
-        mMap.setOnInfoWindowCloseListener(new GoogleMap.OnInfoWindowCloseListener() {
-            @Override
-            public void onInfoWindowClose(Marker marker) {
-                for (Bus bus : buses) {
-                    bus.removeMapPolyline();
-                }
-            }
-        });
     }
 
     @Override
@@ -232,6 +216,8 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         clearSearchFocus();
+        hideBusRoutes();
+        hideServiceRoutes();
         overridePendingTransition(0, 0);
         if (currentTrip.getState() != Trip.START_LOCATION) {
             currentTrip.goToPreviousState();
@@ -247,6 +233,8 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void onMapClick(LatLng latLng) {
                 clearSearchFocus();
+                hideBusRoutes();
+                hideServiceRoutes();
             }
         });
         if (ActivityCompat
@@ -305,6 +293,28 @@ public class MapActivity extends AppCompatActivity
             }
         });
         startCameraFollowingThread();
+        setUpMarkerListeners();
+    }
+
+    private void setUpMarkerListeners() {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                for (Bus bus : buses) {
+                    if (bus.getMarker().equals(marker)) {
+                        showBusRoute(bus);
+                        return true;
+                    }
+                }
+                for (Service service : services) {
+                    if (service.getMarker().equals(marker)) {
+                        showServiceRoute(service);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -503,6 +513,8 @@ public class MapActivity extends AppCompatActivity
                 currentTrip.goToNextState();
                 break;
             case Trip.READY:
+                hideBusRoutes();
+                hideServiceRoutes();
                 currentTrip.goToNextState();
                 startTrip();
         }
@@ -525,8 +537,8 @@ public class MapActivity extends AppCompatActivity
 
     private void fetchVehicles() {
         buses = new ArrayList<>();
-        FirebaseFirestore.getInstance()
-                .collection("buses")
+        FirebaseFirestore dataBase = FirebaseFirestore.getInstance();
+        dataBase.collection("buses")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -545,22 +557,45 @@ public class MapActivity extends AppCompatActivity
                         }
                     }
                 });
+        services = new ArrayList<>();
+        dataBase.collection("services")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot querySnapshot = task.getResult();
+                            if (querySnapshot == null) {
+                                Log.w(TAG,
+                                        "onComplete: document query snapshot result is null");
+                                return;
+                            }
+                            List<DocumentSnapshot> documents = querySnapshot.getDocuments();
+                            for (DocumentSnapshot document : documents) {
+                                services.add(new Service(document, MapActivity.this));
+                            }
+                        }
+                    }
+                });
     }
 
     @Override
     public void onBusReady() {
-        refreshBuses();
+        startRefreshingThread();
     }
 
     private void refreshBuses() {
         for (Bus bus : buses) {
             bus.removeMarker();
-            Marker marker = mMap.addMarker(bus.getMarkerOptions());
-            bus.updateMarker(marker);
+            if (bus.markerOptionsReady()) {
+                Marker marker = mMap.addMarker(bus.getMarkerOptions());
+                bus.updateMarker(marker);
+            }
         }
     }
 
     private void showBusRoute(Bus bus) {
+        hideBusRoutes();
         bus.removeMapPolyline();
         if (bus.routeReady()) {
             PolylineOptions polylineOptions = bus.getRoute()
@@ -568,5 +603,80 @@ public class MapActivity extends AppCompatActivity
             Polyline polyline = mMap.addPolyline(polylineOptions);
             bus.setMapPolyline(polyline);
         }
+    }
+
+    private void hideBusRoutes() {
+        for (Bus bus : buses) {
+            bus.removeMapPolyline();
+        }
+    }
+
+    @Override
+    public void onServiceReady() {
+        startRefreshingThread();
+    }
+
+    private void refreshServices() {
+        for (Service service : services) {
+            service.removeMarker();
+            if (service.markerOptionsReady()) {
+                Marker marker = mMap.addMarker(service.getMarkerOptions());
+                service.updateMarker(marker);
+            }
+        }
+    }
+
+    private void showServiceRoute(Service service) {
+        hideServiceRoutes();
+        service.removeMapPolyline();
+        if (service.routeReady()) {
+            PolylineOptions polylineOptions = service.getRoute()
+                    .color(getResources().getColor(R.color.serviceColor, null));
+            Polyline polyline = mMap.addPolyline(polylineOptions);
+            service.setMapPolyline(polyline);
+        }
+    }
+
+    private void hideServiceRoutes() {
+        for (Service service : services) {
+            service.removeMapPolyline();
+        }
+    }
+
+    private void startRefreshingThread() {
+        if (refreshThread != null) {
+            if (refreshThread.isAlive()) {
+                return;
+            }
+        }
+        refreshThread = new Thread(new Runnable() {
+            @Override
+            public synchronized void run() {
+                while (buses.size() > 0 && services.size() > 0) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshBuses();
+                            refreshServices();
+                            Log.d(TAG, "run: refreshed");
+                        }
+                    });
+                    try {
+                        wait(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        refreshThread.start();
+    }
+
+    public ArrayList<Bus> getBuses() {
+        return buses;
+    }
+
+    public ArrayList<Service> getServices() {
+        return services;
     }
 }

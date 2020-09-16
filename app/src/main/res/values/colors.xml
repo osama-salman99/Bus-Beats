@@ -8,4 +8,17 @@
     <color name="colorShade">#66000000</color>
     <color name="colorPin">#AA1313</color>
     <color name="busColor">#304FFE</color>
+    <color name="serviceColor">#F88632</color>
+    <color name="red">#FF0031</color>
+    <color name="grey">#CFCACA</color>
+    <color name="colorPurple_A400">#D500F9</color>
+    <color name="colorPurple_900">#4A148C</color>
+    <color name="colorGreen_A400">#00E676</color>
+    <color name="colorGreen_900">#1B5E20</color>
+    <color name="dark_blue">#0C4471</color>
+    <color name="colorRed_A400">#FF1744</color>
+    <color name="colorRed_900">#B71C1C</color>
+    <color name="bright_green">#017864</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

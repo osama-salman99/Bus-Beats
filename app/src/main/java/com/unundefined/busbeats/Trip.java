@@ -19,7 +19,7 @@ public class Trip implements TaskLoadedCallback {
     private int state;
     private LatLng startLocation;
     private Marker startLocationMarker;
-    private LatLng destination;
+    private LatLng destinationLocation;
     private Marker destinationMarker;
     private MapActivity mapActivity;
 
@@ -33,17 +33,9 @@ public class Trip implements TaskLoadedCallback {
         this.startLocationMarker = startLocationMarker;
     }
 
-    public LatLng getStartLocation() {
-        return startLocation;
-    }
-
     public void setDestination(LatLng destination, Marker destinationMarker) {
-        this.destination = destination;
+        this.destinationLocation = destination;
         this.destinationMarker = destinationMarker;
-    }
-
-    public LatLng getDestination() {
-        return destination;
     }
 
     private void removeStartMarker() {
@@ -118,16 +110,62 @@ public class Trip implements TaskLoadedCallback {
     }
 
     private void findRoute() {
-        String origin = startLocation.latitude + "," + startLocation.longitude;
-        String destination = this.destination.latitude + "," + this.destination.longitude;
-        String url = "https://maps.googleapis.com/maps/api/directions/json?" +
-                "origin=" + origin + "&" + "destination=" + destination + "&" +
-                "key=" + mapActivity.getResources().getString(R.string.google_cloud_api_key);
-        new FetchURL(this).execute(url, "driving");
+        int busStart = 740;
+        int busEnd = 940;
+        int serviceStart = 100;
+        int serviceEnd = 320;
+        String url;
+        url = getURL(startLocation,
+                mapActivity.getBuses().get(2).getRoute().getPoints().get(busStart));
+        new FetchURL(this).execute(url);
+
+        mapActivity.addPolyline(getBusLocations(busStart, busEnd));
+
+        url = getURL(mapActivity.getBuses().get(2).getRoute().getPoints().get(busEnd),
+                mapActivity.getServices().get(1).getRoute().getPoints().get(serviceStart));
+        new FetchURL(this).execute(url);
+
+        mapActivity.addPolyline(getServiceLocations(serviceStart, serviceEnd));
+
+        url = getURL(mapActivity.getServices().get(1).getRoute().getPoints().get(serviceEnd),
+                destinationLocation);
+        new FetchURL(this).execute(url);
+    }
+
+    private PolylineOptions getBusLocations(int from, int to) {
+        if (from > to) {
+            int temp = from;
+            from = to;
+            to = temp;
+        }
+        PolylineOptions route = mapActivity.getBuses().get(2).getRoute();
+        return new PolylineOptions()
+                .addAll(route.getPoints().subList(from, to))
+                .color(mapActivity.getResources().getColor(R.color.busColor, null));
+    }
+
+    private PolylineOptions getServiceLocations(int from, int to) {
+        if (from > to) {
+            int temp = from;
+            from = to;
+            to = temp;
+        }
+        PolylineOptions route = mapActivity.getServices().get(1).getRoute();
+        return new PolylineOptions()
+                .addAll(route.getPoints().subList(from, to))
+                .color(mapActivity.getResources().getColor(R.color.serviceColor, null));
     }
 
     @Override
     public void onTaskDone(Object... values) {
         mapActivity.addPolyline((PolylineOptions) values[0]);
+    }
+
+    private String getURL(LatLng startLocation, LatLng destinationLocation) {
+        String origin = startLocation.latitude + "," + startLocation.longitude;
+        String destination = destinationLocation.latitude + "," + destinationLocation.longitude;
+        return "https://maps.googleapis.com/maps/api/directions/json?" +
+                "origin=" + origin + "&" + "destination=" + destination + "&" +
+                "key=" + mapActivity.getResources().getString(R.string.google_cloud_api_key);
     }
 }
