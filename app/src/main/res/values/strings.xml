@@ -1,14 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Bus Beats</string>
-    <string name="previous_rides">Previous rides</string>
-    <string name="map">Map</string>
-    <string name="settings">Settings</string>
-    <string name="go_button">Go Button</string>
-    <string name="my_location_button">My Location Button</string>
-    <string name="google_cloud_api_key">GOOGLE_API_KEY_HERE</string>
-    <string name="server_client_id" tools:ignore="TypographyDashes">
-        111787593487-nqssvthlgj8vtjss9a9iapd9r0t3291s.apps.googleusercontent.com
-    </string>
     <string name="app_label">Bus Beats</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -24,4 +14,19 @@
     <string name="gender_other">Prefer not to specify</string>
     <string name="facebook_app_id">603018826917625</string>
     <string name="fb_login_protocol_scheme">fb603018826917625</string>
+    <string name="server_client_id" tools:ignore="TypographyDashes">
+        111787593487-nqssvthlgj8vtjss9a9iapd9r0t3291s.apps.googleusercontent.com
+    </string>
+    <string name="google_cloud_api_key">AIzaSyBaXsGY-7EKR5p8SGtOUOBUP_ObcD68Srs</string>
+    <string name="sign_out">Sign out</string>
+    <string name="previous_rides">Previous rides</string>
+    <string name="map">Map</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="my_location_icon">My location icon</string>
+    <string name="search_hint">Search places</string>
+    <string name="my_location_button">My Location Button</string>
+    <string name="go_button">Go Button</string>
+    <string name="start">Start</string>
+    <string name="select">Select</string>
 </resources>
