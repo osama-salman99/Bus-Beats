@@ -12,12 +12,12 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_other">Prefer not to specify</string>
-    <string name="facebook_app_id">ID</string>
-    <string name="fb_login_protocol_scheme">KEY</string>
+    <string name="facebook_app_id">603018826917625</string>
+    <string name="fb_login_protocol_scheme">fb603018826917625</string>
     <string name="server_client_id" tools:ignore="TypographyDashes">
-        KEY
+        111787593487-nqssvthlgj8vtjss9a9iapd9r0t3291s.apps.googleusercontent.com
     </string>
-    <string name="google_cloud_api_key">KEY</string>
+    <string name="google_cloud_api_key">AIzaSyBaXsGY-7EKR5p8SGtOUOBUP_ObcD68Srs</string>
     <string name="sign_out">Sign out</string>
     <string name="previous_rides">Previous rides</string>
     <string name="map">Map</string>
